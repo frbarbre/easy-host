@@ -6,35 +6,35 @@ const placeholderData: Config = {
   containers: [
     {
       port: 3004,
-      name: "next",
+      name: "ez-next",
       id: "next",
       context: "./frontend",
-      proxy: null,
+      proxy: "/",
       env_variables: [
         {
           key: "API_URL",
-          value: "backend:8080",
+          value: "http://laravel",
         },
       ],
     },
     {
       port: 8080,
-      name: "laravel",
+      name: "ez-laravel",
       id: "laravel",
       context: "./backend",
       proxy: "/api",
       env_variables: [
         {
           key: "DB_CONNECTION",
-          value: "postgres",
+          value: "pgsql",
         },
         {
           key: "DB_HOST",
-          value: "http://postgres",
+          value: "ez-postgres",
         },
         {
           key: "DB_PORT",
-          value: "3306",
+          value: "5432",
         },
         {
           key: "DB_DATABASE",
@@ -42,7 +42,7 @@ const placeholderData: Config = {
         },
         {
           key: "DB_USERNAME",
-          value: "root",
+          value: "postgres",
         },
         {
           key: "DB_PASSWORD",
@@ -51,15 +51,15 @@ const placeholderData: Config = {
       ],
     },
     {
-      port: 5432,
-      name: "postgres",
+      port: 9891,
+      name: "ez-postgres",
       id: "postgres",
       context: null,
       proxy: null,
       env_variables: [
         {
           key: "POSTGRES_USER",
-          value: "root",
+          value: "postgres",
         },
         {
           key: "POSTGRES_PASSWORD",
@@ -73,23 +73,32 @@ const placeholderData: Config = {
     },
   ],
   github: {
-    isPrivate: false,
-    uri: "https://github.com/username/repo",
+    isPrivate: true,
+    uri: "github.com/frbarbre/ez-deploy-test-project",
   },
   env_variables: [
     {
-      key: "key1",
-      value: "value1",
+      key: "POSTGRES_USER",
+      value: "postgres",
     },
     {
-      key: "key2",
-      value: "value2",
+      key: "POSTGRES_PASSWORD",
+      value: "password",
+    },
+    {
+      key: "POSTGRES_DB",
+      value: "db",
     },
   ],
   network_name: "cool",
-  domain: "example.com",
-  email: "example@mail.com",
+  domain: "ezdeploy.frederikbarbre.dk",
+  email: "fr.barbre@gmail.com",
   api_url_env: "API_URL",
+  include_sensitive_env_variables: true,
+  location: "/ezdeploy/myapp",
+  nginx: {
+    configName: "ezdeploy",
+  },
 };
 
 function App() {

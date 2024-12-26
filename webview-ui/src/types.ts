@@ -24,4 +24,9 @@ export type Config = {
   domain: string;
   email: string;
   api_url_env: string | null;
+  include_sensitive_env_variables: boolean;
+  location: string;
+  nginx?: {
+    configName: string;
+  };
 };

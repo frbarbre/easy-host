@@ -29,14 +29,18 @@ export function generateDockerCompose(config: Config, projectRoot: string) {
 
       const apiUrlEnv = config.api_url_env;
 
-      const envVariables = container.env_variables.map((env) => {
-        if (env.key === apiUrlEnv) {
-          return `      ${env.key}: ${
-            "http://" + types.find((type) => type.type === "backend")?.name
-          }`;
-        }
-        return `      ${env.key}: ${"${" + env.key + "}"}`;
-      });
+      const envVariables = container.env_variables
+        .map((env) => {
+          if (env.key === apiUrlEnv) {
+            return `      ${env.key}: ${
+              "http://" + types.find((type) => type.type === "backend")?.name
+            }`;
+          }
+          if (type === "database") {
+            return `      ${env.key}: ${"${" + env.key + "}"}`;
+          }
+        })
+        .filter((a) => a);
 
       const serviceParts = [
         `  ${container.name}:`,
@@ -58,8 +62,10 @@ export function generateDockerCompose(config: Config, projectRoot: string) {
       - ${dependsOn.join("\n      - ")}`
           : null,
         type === "database" && volumes ? `    ${volumes.content}` : null,
-        `    environment:
-${envVariables.join("\n")}`,
+        envVariables.length > 0
+          ? `    environment:
+${envVariables.join("\n")}`
+          : null,
       ].filter(Boolean);
 
       return serviceParts.join("\n");

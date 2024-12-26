@@ -13,8 +13,8 @@ export async function fileGenerator(config: Config, workspacePath: string) {
       generateDockerfile(container, projectRoot)
     );
     generateDockerCompose(config, projectRoot);
-    generateUpdateScript(projectRoot);
-    generateDeployScript(projectRoot);
+    generateUpdateScript(config, projectRoot);
+    generateDeployScript(config, projectRoot);
     console.log("Files generated successfully.");
   } catch (error) {
     console.error("Error generating files:", error);

@@ -1,7 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
+import { Config } from "../types";
 
-export function generateUpdateScript(projectRoot: string) {
+export function generateUpdateScript(config: Config, projectRoot: string) {
   const updateScriptContent = `#!/bin/bash
 echo "Updating containers..."
 docker-compose pull
