@@ -1,9 +1,11 @@
+export type Containers = "next" | "laravel";
+
 export type Config = {
   containers: {
     port: number;
     name: string;
-    id: string;
-    context: string;
+    id: Containers;
+    context: string | null;
     proxy: string | null;
     env_variables: {
       key: string;
@@ -18,6 +20,7 @@ export type Config = {
     key: string;
     value: string;
   }[];
+  network_name: string | null;
   domain: string;
   email: string;
 };

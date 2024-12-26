@@ -1,4 +1,5 @@
 import { Uri, Webview } from "vscode";
+import { Type } from "./types";
 
 /**
  * A helper function which will get the webview URI of a given file or resource.
@@ -35,4 +36,56 @@ export function getNonce() {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;
+}
+
+export function getInternalPort(id: string) {
+  if (id === "next") {
+    return 3000;
+  }
+
+  if (id === "laravel") {
+    return 80;
+  }
+}
+
+export function getType(id: string): Type | null {
+  const frontend = ["next"];
+  const backend = ["laravel"];
+  const database = ["mysql", "postgres"];
+
+  if (frontend.includes(id)) {
+    return "frontend";
+  }
+
+  if (backend.includes(id)) {
+    return "backend";
+  }
+
+  if (database.includes(id)) {
+    return "database";
+  }
+
+  return null;
+}
+
+export function getDependsOn({
+  all_types,
+  current_type,
+}: {
+  all_types: { name: string; type: Type | null }[];
+  current_type: Type | null;
+}) {
+  if (current_type === "frontend") {
+    return all_types
+      .filter((type) => type.type === "backend")
+      .map((type) => type.name);
+  }
+
+  if (current_type === "backend") {
+    return all_types
+      .filter((type) => type.type === "database")
+      .map((type) => type.name);
+  }
+
+  return [];
 }

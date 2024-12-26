@@ -5,27 +5,23 @@ import { Config } from "./types";
 const placeholderData: Config = {
   containers: [
     {
-      port: 3000,
-      name: "frontend-container",
+      port: 3004,
+      name: "next",
       id: "next",
-      context: "frontend",
+      context: "./frontend",
       proxy: null,
       env_variables: [
         {
-          key: "key1",
-          value: "value1",
-        },
-        {
-          key: "key2",
-          value: "value2",
+          key: "API_URL",
+          value: "backend:8080",
         },
       ],
     },
     {
       port: 8080,
-      name: "backend-container",
+      name: "laravel",
       id: "laravel",
-      context: "backend",
+      context: "./backend",
       proxy: "/api",
       env_variables: [
         {
@@ -53,6 +49,7 @@ const placeholderData: Config = {
       value: "value2",
     },
   ],
+  network_name: "cool",
   domain: "example.com",
   email: "example@mail.com",
 };
