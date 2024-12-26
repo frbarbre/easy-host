@@ -1,5 +1,5 @@
 import { Uri, Webview } from "vscode";
-import { Type } from "./types";
+import { Containers, Type } from "./types";
 
 /**
  * A helper function which will get the webview URI of a given file or resource.
@@ -46,6 +46,10 @@ export function getInternalPort(id: string) {
   if (id === "laravel") {
     return 80;
   }
+
+  if (id === "postgres") {
+    return 5432;
+  }
 }
 
 export function getType(id: string): Type | null {
@@ -88,4 +92,12 @@ export function getDependsOn({
   }
 
   return [];
+}
+
+export function getImage(id: Containers) {
+  if (id === "postgres") {
+    return "postgres:latest";
+  }
+
+  return null;
 }

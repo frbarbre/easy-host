@@ -1,4 +1,4 @@
-export type Containers = "next" | "laravel";
+export type Containers = "next" | "laravel" | "postgres";
 
 export type Config = {
   containers: {
@@ -23,4 +23,5 @@ export type Config = {
   network_name: string | null;
   domain: string;
   email: string;
+  api_url_env: string | null;
 };
