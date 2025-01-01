@@ -1,10 +1,16 @@
-export type Containers = "next" | "laravel" | "postgres";
+import { containerConfig } from "../utilities";
+
+export type Container = (typeof containerConfig)[keyof typeof containerConfig];
+
+export type Containers = Container["id"];
+
+export type Type = Container["type"];
 
 export type Config = {
   containers: {
     port: number;
     name: string;
-    id: Containers;
+    id: Container["id"];
     context: string | null;
     proxy: string | null;
     env_variables: {
@@ -30,5 +36,3 @@ export type Config = {
     configName: string;
   };
 };
-
-export type Type = "frontend" | "backend" | "database";

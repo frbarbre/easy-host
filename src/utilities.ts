@@ -1,5 +1,5 @@
 import { Uri, Webview } from "vscode";
-import { Containers, Type } from "./types";
+import { Container, Type } from "./types";
 
 /**
  * A helper function which will get the webview URI of a given file or resource.
@@ -38,40 +38,6 @@ export function getNonce() {
   return text;
 }
 
-export function getInternalPort(id: string) {
-  if (id === "next") {
-    return 3000;
-  }
-
-  if (id === "laravel") {
-    return 80;
-  }
-
-  if (id === "postgres") {
-    return 5432;
-  }
-}
-
-export function getType(id: string): Type | null {
-  const frontend = ["next"];
-  const backend = ["laravel"];
-  const database = ["mysql", "postgres"];
-
-  if (frontend.includes(id)) {
-    return "frontend";
-  }
-
-  if (backend.includes(id)) {
-    return "backend";
-  }
-
-  if (database.includes(id)) {
-    return "database";
-  }
-
-  return null;
-}
-
 export function getDependsOn({
   all_types,
   current_type,
@@ -94,10 +60,37 @@ export function getDependsOn({
   return [];
 }
 
-export function getImage(id: Containers) {
-  if (id === "postgres") {
-    return "postgres:latest";
-  }
+export const containerConfig = {
+  postgres: {
+    id: "postgres",
+    image: null,
+    internalPort: 5432,
+    type: "database",
+  },
+  next: {
+    id: "next",
+    image: null,
+    internalPort: 3000,
+    type: "frontend",
+  },
+  laravel: {
+    id: "laravel",
+    image: null,
+    internalPort: 80,
+    type: "backend",
+  },
+} as const;
 
-  return null;
+export const containers = Object.values(containerConfig);
+
+export function getImage(id: Container["id"]) {
+  return containerConfig[id as keyof typeof containerConfig].image;
+}
+
+export function getInternalPort(id: Container["id"]) {
+  return containerConfig[id as keyof typeof containerConfig].internalPort;
+}
+
+export function getType(id: Container["id"]) {
+  return containerConfig[id as keyof typeof containerConfig].type;
 }

@@ -1,9 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
 import { Config } from "../types";
-import { getDependsOn, getImage, getInternalPort, getType } from "../utilities";
+import { getType, getInternalPort } from "../utilities";
 import { getNetwork } from "../handlers/network";
 import { getVolumes } from "../handlers/volumes";
+import { getDependsOn, getImage } from "../utilities";
 
 export function generateDockerCompose(config: Config, projectRoot: string) {
   const types = config.containers.map((container) => {
