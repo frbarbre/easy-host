@@ -12,6 +12,7 @@ import { Button } from "./ui/button";
 import { EnvVariableInputs } from "./env-variable-inputs";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { FormSchema } from "../schemas/form-schema";
+import { Container, getType } from "@/utils";
 
 interface ContainerCardProps {
   index: number;
@@ -26,6 +27,7 @@ export function ContainerCard({
   form,
   onRemove,
 }: ContainerCardProps) {
+  const type = getType(field.id as Container["id"]);
   return (
     <Card>
       <CardContent className="pt-6">
@@ -58,56 +60,61 @@ export function ContainerCard({
             )}
           />
 
-          {/* Context Field */}
-          <FormField
-            control={form.control}
-            name={`containers.${index}.context`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Context</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    value={field.value || ""}
-                    placeholder="./packages/frontend"
-                  />
-                </FormControl>
-                <FormDescription>
-                  The path to the container's context (optional)
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {type !== "database" && (
+            <>
+              {/* Context Field */}
+              <FormField
+                control={form.control}
+                name={`containers.${index}.context`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Context</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        placeholder="./packages/frontend"
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      The path to the container's context (optional)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          {/* Proxy Field */}
-          <FormField
-            control={form.control}
-            name={`containers.${index}.proxy`}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Proxy Path</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    value={field.value || ""}
-                    placeholder="/api"
-                  />
-                </FormControl>
-                <FormDescription>
-                  The proxy path for the container (optional)
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              {/* Proxy Field */}
+              <FormField
+                control={form.control}
+                name={`containers.${index}.proxy`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Proxy Path</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        placeholder="/api"
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      The proxy path for the container (optional)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
         </div>
 
         {/* Container Environment Variables */}
         <div className="mt-4">
           <FormLabel>Container Environment Variables</FormLabel>
           <EnvVariableInputs
-            envVariables={form.watch(`containers.${index}.env_variables`)}
+            form={form}
+            containerIndex={index}
             onAdd={(key, value) => {
               const current = form.getValues(
                 `containers.${index}.env_variables`

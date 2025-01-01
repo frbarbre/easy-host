@@ -15,10 +15,20 @@
     "commands": [
       {
         "command": "ez-deploy.run",
-        "title": "Start Ez Deploy",
-        "category": "Ez Deploy"
+        "title": "EZ Deploy: Open Panel",
+        "category": "EZ Deploy",
+        "icon": "$(rocket)"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ez-deploy",
+          "title": "EZ Deploy",
+          "icon": "$(rocket)"
+        }
+      ]
+    }
   },
   "scripts": {
     "install:all": "npm install && cd webview-ui && npm install",

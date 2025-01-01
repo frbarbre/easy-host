@@ -30,5 +30,3 @@ export type Config = {
     configName: string;
   };
 };
-
-export type Type = "frontend" | "backend" | "database";

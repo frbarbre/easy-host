@@ -1,3 +1,4 @@
+import { containers } from "@/utils";
 import * as z from "zod";
 
 export const formSchema = z.object({
@@ -10,7 +11,7 @@ export const formSchema = z.object({
         { message: "Port must be a number" }
       ),
       name: z.string().min(1, { message: "Name is required" }),
-      id: z.string(),
+      id: z.enum(containers.map((c) => c.id) as [string, ...string[]]),
       context: z.string().nullable(),
       proxy: z.string().nullable(),
       env_variables: z.array(

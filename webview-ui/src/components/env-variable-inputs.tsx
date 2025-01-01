@@ -1,20 +1,28 @@
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { FormControl, FormField, FormItem, FormMessage } from "./ui/form";
+import { UseFormReturn } from "react-hook-form";
+import { FormSchema } from "@/schemas/form-schema";
 
 interface EnvVariableInputsProps {
-  envVariables: { key: string; value: string }[];
   onAdd: (key: string, value: string) => void;
   onRemove: (index: number) => void;
+  form: UseFormReturn<FormSchema>;
+  containerIndex: number;
 }
 
 export function EnvVariableInputs({
-  envVariables,
   onAdd,
   onRemove,
+  form,
+  containerIndex,
 }: EnvVariableInputsProps) {
   const [key, setKey] = useState("");
   const [value, setValue] = useState("");
+
+  // Get env variables directly from form
+  const envVariables = form.watch(`containers.${containerIndex}.env_variables`);
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -45,9 +53,10 @@ export function EnvVariableInputs({
     }
   };
 
+  console.log(form.formState.errors);
   return (
     <div className="space-y-4">
-      <div className="flex gap-4">
+      <div className="flex gap-4 mt-2">
         <Input
           name="key"
           placeholder="Key (or paste .env content)"
@@ -76,17 +85,44 @@ export function EnvVariableInputs({
         </Button>
       </div>
       <div className="space-y-2">
-        {envVariables.map((env, index) => (
-          <div key={index} className="flex gap-4">
-            <Input disabled value={env.key} />
-            <Input disabled value={env.value} />
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => onRemove(index)}
-            >
-              Remove
-            </Button>
+        {envVariables?.map((_, index) => (
+          <div key={index}>
+            <FormField
+              control={form.control}
+              name={`containers.${containerIndex}.env_variables.${index}.key`}
+              render={({ field }) => (
+                <FormItem className="flex gap-4 items-start">
+                  <div className="flex-1">
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name={`containers.${containerIndex}.env_variables.${index}.value`}
+                    render={({ field: valueField }) => (
+                      <div className="flex-1 space-y-0">
+                        <FormControl>
+                          <Input
+                            {...valueField}
+                            value={valueField.value || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </div>
+                    )}
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => onRemove(index)}
+                  >
+                    Remove
+                  </Button>
+                </FormItem>
+              )}
+            />
           </div>
         ))}
       </div>

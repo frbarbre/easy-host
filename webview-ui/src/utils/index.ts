@@ -1,5 +1,3 @@
-import { Type } from "../types";
-
 export const containerConfig = {
   next: {
     id: "next",
@@ -26,6 +24,27 @@ export function getInternalPort(id: Container["id"]) {
   return containerConfig[id as keyof typeof containerConfig].internalPort;
 }
 
-export function getType(id: Container["id"]): Type | null {
+export function getType(id: Container["id"]): Container["type"] {
   return containerConfig[id as keyof typeof containerConfig].type;
+}
+
+export function getDefaultEnvVariables(id: Container["id"]) {
+  if (id === "postgres") {
+    return [
+      {
+        key: "POSTGRES_PASSWORD",
+        value: "",
+      },
+      {
+        key: "POSTGRES_USER",
+        value: "",
+      },
+      {
+        key: "POSTGRES_DB",
+        value: "",
+      },
+    ];
+  }
+
+  return [];
 }
