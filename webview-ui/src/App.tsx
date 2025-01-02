@@ -32,9 +32,11 @@ function App() {
     },
   });
 
-  // Load saved state on mount
+  // Load saved state and scroll position on mount
   useEffect(() => {
     const savedState = localStorage.getItem("formState");
+    const savedScroll = localStorage.getItem("scrollPosition");
+
     if (savedState) {
       try {
         const parsedState = JSON.parse(savedState);
@@ -43,7 +45,21 @@ function App() {
         console.error("❌ Error loading saved state:", error);
       }
     }
+
+    if (savedScroll) {
+      window.scrollTo(0, parseInt(savedScroll));
+    }
   }, [form]);
+
+  // Save scroll position on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      localStorage.setItem("scrollPosition", window.scrollY.toString());
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Save state changes with debounce
   useEffect(() => {
