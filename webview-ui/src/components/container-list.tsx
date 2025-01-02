@@ -100,7 +100,7 @@ export function ContainerList({ form }: ContainerListProps) {
           return (
             <Card key={type} className="border-dashed">
               <CardContent className="pt-6">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold capitalize">{type}</h3>
                   {availableContainers.length > 0 && (
                     <Select onValueChange={addContainer}>
@@ -118,7 +118,7 @@ export function ContainerList({ form }: ContainerListProps) {
                   )}
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-4 mt-4">
                   {fields
                     .filter((field) => {
                       // Add type guard

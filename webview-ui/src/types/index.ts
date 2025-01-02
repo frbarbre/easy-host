@@ -1,6 +1,4 @@
-import { containerConfig } from "../utils";
-
-export type Container = (typeof containerConfig)[keyof typeof containerConfig];
+import { Container } from "../utils";
 
 export type Containers = Container["id"];
 

@@ -4,6 +4,9 @@ import { Button } from "./ui/button";
 import { FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { FormSchema } from "@/schemas/form-schema";
+import { getDefaultEnvVariables } from "@/utils";
+import { Container } from "@/utils";
+import { Trash2 } from "lucide-react";
 
 interface EnvVariableInputsProps {
   onAdd: (key: string, value: string) => void;
@@ -53,7 +56,10 @@ export function EnvVariableInputs({
     }
   };
 
-  console.log(form.formState.errors);
+  const defaultEnvVariables = getDefaultEnvVariables(
+    form.getValues("containers")[containerIndex].id as Container["id"]
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex gap-4 mt-2">
@@ -84,48 +90,57 @@ export function EnvVariableInputs({
           Add
         </Button>
       </div>
-      <div className="space-y-2">
-        {envVariables?.map((_, index) => (
-          <div key={index}>
-            <FormField
-              control={form.control}
-              name={`containers.${containerIndex}.env_variables.${index}.key`}
-              render={({ field }) => (
-                <FormItem className="flex gap-4 items-start">
-                  <div className="flex-1">
-                    <FormControl>
-                      <Input {...field} value={field.value || ""} />
-                    </FormControl>
-                    <FormMessage />
-                  </div>
-                  <FormField
-                    control={form.control}
-                    name={`containers.${containerIndex}.env_variables.${index}.value`}
-                    render={({ field: valueField }) => (
-                      <div className="flex-1 space-y-0">
-                        <FormControl>
-                          <Input
-                            {...valueField}
-                            value={valueField.value || ""}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </div>
-                    )}
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    onClick={() => onRemove(index)}
-                  >
-                    Remove
-                  </Button>
-                </FormItem>
-              )}
-            />
-          </div>
-        ))}
-      </div>
+      {envVariables?.length > 0 && (
+        <div className="flex flex-col gap-4 mt-4 border rounded-md p-4">
+          {envVariables?.map((_, index) => (
+            <div key={index}>
+              <FormField
+                control={form.control}
+                name={`containers.${containerIndex}.env_variables.${index}.key`}
+                render={({ field }) => (
+                  <FormItem className="flex gap-4 items-start space-y-0">
+                    <div className="flex-1">
+                      <FormControl>
+                        <Input
+                          disabled={defaultEnvVariables.some(
+                            (envVar) => envVar.key === field.value
+                          )}
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name={`containers.${containerIndex}.env_variables.${index}.value`}
+                      render={({ field: valueField }) => (
+                        <div className="flex-1 ">
+                          <FormControl>
+                            <Input
+                              {...valueField}
+                              value={valueField.value || ""}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </div>
+                      )}
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={() => onRemove(index)}
+                      size="icon"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </FormItem>
+                )}
+              />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -35,7 +35,12 @@ export function ContainerCard({
           <h3 className="text-lg font-semibold capitalize">
             {field.name} Container
           </h3>
-          <Button variant="destructive" size="sm" onClick={onRemove}>
+          <Button
+            variant="destructive"
+            type="button"
+            size="sm"
+            onClick={onRemove}
+          >
             Remove
           </Button>
         </div>

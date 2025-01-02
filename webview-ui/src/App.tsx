@@ -1,16 +1,18 @@
-import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "./components/ui/button";
-import { Form } from "./components/ui/form";
-import { vscode } from "./vscode";
-import { FormSchema, formSchema } from "./schemas/form-schema";
+import { z } from "zod";
+import { AdvancedSettings } from "./components/advanced-settings";
 import { ContainerList } from "./components/container-list";
 import { ProjectSettings } from "./components/project-settings";
-import { AdvancedSettings } from "./components/advanced-settings";
-import { z } from "zod";
+import { Button } from "./components/ui/button";
+import { Form } from "./components/ui/form";
+import { FormSchema, formSchema } from "./schemas/form-schema";
+import { vscode } from "./vscode";
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,18 +48,37 @@ function App() {
       }
     }
 
-    if (savedScroll) {
-      window.scrollTo(0, parseInt(savedScroll));
-    }
+    // Use nested requestAnimationFrame for better timing
+    requestAnimationFrame(() => {
+      setIsLoading(false);
+
+      requestAnimationFrame(() => {
+        if (savedScroll) {
+          const scrollPosition = parseInt(savedScroll);
+          window.scrollTo({
+            top: scrollPosition,
+            behavior: "instant",
+          });
+        }
+      });
+    });
   }, [form]);
 
-  // Save scroll position on scroll
+  // Save scroll position on scroll with throttling
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      localStorage.setItem("scrollPosition", window.scrollY.toString());
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          localStorage.setItem("scrollPosition", window.scrollY.toString());
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -87,14 +108,26 @@ function App() {
 
   return (
     <div className="min-h-screen p-10">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <ProjectSettings form={form} />
-          <AdvancedSettings form={form} />
-          <ContainerList form={form} />
-          <Button type="submit">Deploy</Button>
-        </form>
-      </Form>
+      {isLoading ? (
+        <div className="flex items-center justify-center min-h-screen"></div>
+      ) : (
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <ProjectSettings form={form} />
+            <AdvancedSettings form={form} />
+            <ContainerList form={form} />
+            <Button
+              type="button"
+              onClick={() => {
+                form.trigger();
+                form.handleSubmit(onSubmit)();
+              }}
+            >
+              Deploy
+            </Button>
+          </form>
+        </Form>
+      )}
     </div>
   );
 }
