@@ -38,7 +38,7 @@ export const formSchema = z.object({
       value: z.string().min(1, { message: "Value is required" }),
     })
   ),
-  network_name: z.string().min(1, { message: "Network name is required" }),
+  network_name: z.string(),
   domain: z.string().min(1, { message: "Domain is required" }),
   email: z.string().email({ message: "Invalid email address" }),
   api_url_env: z

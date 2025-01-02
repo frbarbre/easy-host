@@ -71,7 +71,7 @@ export function ContainerList({ form }: ContainerListProps) {
         port: String(container.internalPort),
         id: container.id,
         context: null,
-        proxy: null,
+        proxy: container.type === "frontend" ? "./" : null,
         env_variables: getDefaultEnvVariables(container.id),
       };
 

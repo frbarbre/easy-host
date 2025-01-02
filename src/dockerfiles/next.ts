@@ -1,18 +1,19 @@
 export function getNextDockerFile(port: number = 3000) {
-  return `FROM oven/bun:alpine AS base
-    
+  return `# Stage 0: Use Node.js as the base image
+FROM node:18-alpine AS base
+
 # Stage 1: Install dependencies
 FROM base AS deps
 WORKDIR /app
-COPY package.json bun.lockb ./
-RUN bun install --frozen-lockfile
+COPY package.json package-lock.json ./
+RUN npm ci --force
 
 # Stage 2: Build the application
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN bun run build
+RUN npm run build
 
 # Stage 3: Production server
 FROM base AS runner
@@ -23,5 +24,5 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
 EXPOSE ${port}
-CMD ["bun", "run", "server.js"]`;
+CMD ["node", "server.js"]`;
 }

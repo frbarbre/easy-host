@@ -46,6 +46,22 @@ export function ContainerCard({
         </div>
 
         <div className="grid gap-4">
+          {/* Name Field */}
+          <FormField
+            control={form.control}
+            name={`containers.${index}.name`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input placeholder={`ez-${field.value}`} {...field} />
+                </FormControl>
+                <FormDescription>The name of your container</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           {/* Port Field */}
           <FormField
             control={form.control}
@@ -54,11 +70,7 @@ export function ContainerCard({
               <FormItem>
                 <FormLabel>Port</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    onChange={(e) => field.onChange(parseInt(e.target.value))}
-                  />
+                  <Input {...field} placeholder="3000" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -89,27 +101,31 @@ export function ContainerCard({
                 )}
               />
 
-              {/* Proxy Field */}
-              <FormField
-                control={form.control}
-                name={`containers.${index}.proxy`}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Proxy Path</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        value={field.value || ""}
-                        placeholder="/api"
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      The proxy path for the container (optional)
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {type !== "frontend" && (
+                <>
+                  {/* Proxy Field */}
+                  <FormField
+                    control={form.control}
+                    name={`containers.${index}.proxy`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Proxy Path</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            value={field.value || ""}
+                            placeholder="/api"
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          The proxy path for the container (optional)
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
             </>
           )}
         </div>
