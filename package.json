@@ -9,7 +9,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:ez-deploy.run"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [

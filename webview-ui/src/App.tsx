@@ -149,23 +149,39 @@ function App() {
       {isLoading ? (
         <div className="flex items-center justify-center min-h-screen"></div>
       ) : (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <GitHubSettings form={form} />
-            <ProjectSettings form={form} />
-            <AdvancedSettings form={form} />
-            <ContainerList form={form} />
+        <>
+          <article className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold">EasyHost</h1>
+
             <Button
-              type="button"
               onClick={() => {
-                form.trigger();
-                form.handleSubmit(onSubmit)();
+                localStorage.removeItem("formState");
+                form.reset();
               }}
+              variant="ghost"
             >
-              Deploy
+              Reset the form
             </Button>
-          </form>
-        </Form>
+          </article>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <GitHubSettings form={form} />
+              <ProjectSettings form={form} />
+              <AdvancedSettings form={form} />
+              <ContainerList form={form} />
+              <Button
+                type="button"
+                onClick={() => {
+                  form.trigger();
+                  form.handleSubmit(onSubmit)();
+                }}
+              >
+                Deploy
+              </Button>
+            </form>
+          </Form>
+        </>
       )}
     </div>
   );

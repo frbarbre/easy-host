@@ -71,7 +71,7 @@ export function ContainerList({ form }: ContainerListProps) {
         port: String(container.internalPort),
         id: container.id,
         context: null,
-        proxy: container.type === "frontend" ? "./" : null,
+        proxy: container.type === "frontend" ? "/" : null,
         env_variables: getDefaultEnvVariables(container.id),
       };
 
@@ -118,7 +118,7 @@ export function ContainerList({ form }: ContainerListProps) {
                   )}
                 </div>
 
-                <div className="space-y-4 mt-4">
+                <div className="space-y-4">
                   {fields
                     .filter((field) => {
                       // Add type guard

@@ -13,6 +13,7 @@ import { EnvVariableInputs } from "./env-variable-inputs";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { FormSchema } from "../schemas/form-schema";
 import { Container, getType } from "@/utils";
+import { useEffect } from "react";
 
 interface ContainerCardProps {
   index: number;
@@ -28,8 +29,51 @@ export function ContainerCard({
   onRemove,
 }: ContainerCardProps) {
   const type = getType(field.id as Container["id"]);
+
+  const currentValues = form.watch();
+  const api_url_name = currentValues.api_url_env;
+
+  const backend_container_name = currentValues.containers.find((container) => {
+    const type = getType(container.id as Container["id"]);
+
+    return type === "backend";
+  })?.name;
+
+  const api_url_value = `http://${backend_container_name}`;
+
+  useEffect(() => {
+    if (type === "frontend") {
+      const currentEnvVars = currentValues.containers[index].env_variables;
+
+      // Remove any old API URL variables
+      const filteredVars = currentEnvVars.filter(
+        (v) =>
+          !Object.values(currentValues.containers).some((c) =>
+            c.env_variables.some(
+              (ev) => ev.key === v.key && ev.value.startsWith("http://")
+            )
+          )
+      );
+
+      // Only add API URL if backend exists
+      const newVars = backend_container_name
+        ? [{ key: api_url_name, value: api_url_value }, ...filteredVars]
+        : filteredVars;
+
+      form.setValue(`containers.${index}.env_variables`, newVars);
+    }
+  }, [
+    backend_container_name,
+    api_url_name,
+    api_url_value,
+    form,
+    index,
+    type,
+    currentValues.containers,
+  ]);
+
   return (
-    <Card>
+    <Card className="mt-4">
       <CardContent className="pt-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold capitalize">

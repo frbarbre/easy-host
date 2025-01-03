@@ -63,7 +63,7 @@ export function getDependsOn({
 export const containerConfig = {
   postgres: {
     id: "postgres",
-    image: null,
+    image: "postgres:16",
     internalPort: 5432,
     type: "database",
   },

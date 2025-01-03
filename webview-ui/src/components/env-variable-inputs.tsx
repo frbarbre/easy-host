@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { FormSchema } from "@/schemas/form-schema";
-import { getDefaultEnvVariables } from "@/utils";
+import { getDefaultEnvVariables, getType } from "@/utils";
 import { Container } from "@/utils";
 import { Trash2 } from "lucide-react";
 
@@ -60,6 +60,12 @@ export function EnvVariableInputs({
     form.getValues("containers")[containerIndex].id as Container["id"]
   );
 
+  const currentValues = form.watch();
+
+  const type = getType(
+    currentValues.containers[containerIndex].id as Container["id"]
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex gap-4 mt-2">
@@ -102,9 +108,13 @@ export function EnvVariableInputs({
                     <div className="flex-1">
                       <FormControl>
                         <Input
-                          disabled={defaultEnvVariables.some(
-                            (envVar) => envVar.key === field.value
-                          )}
+                          disabled={
+                            defaultEnvVariables.some(
+                              (envVar) => envVar.key === field.value
+                            ) ||
+                            (field.value === currentValues.api_url_env &&
+                              type === "frontend")
+                          }
                           {...field}
                           value={field.value || ""}
                         />
@@ -119,6 +129,10 @@ export function EnvVariableInputs({
                           <FormControl>
                             <Input
                               {...valueField}
+                              disabled={
+                                field.value === currentValues.api_url_env &&
+                                type === "frontend"
+                              }
                               value={valueField.value || ""}
                             />
                           </FormControl>
@@ -131,6 +145,13 @@ export function EnvVariableInputs({
                       variant="destructive"
                       onClick={() => onRemove(index)}
                       size="icon"
+                      disabled={
+                        defaultEnvVariables.some(
+                          (envVar) => envVar.key === field.value
+                        ) ||
+                        (field.value === currentValues.api_url_env &&
+                          type === "frontend")
+                      }
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
