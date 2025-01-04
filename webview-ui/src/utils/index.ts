@@ -1,18 +1,31 @@
+import { Laravel } from "@/components/icons/laravel";
+import NextJs from "@/components/icons/next-js";
+import Postgres from "@/components/icons/postgres";
+
 export const containerConfig = {
   next: {
     id: "next",
     type: "frontend",
     internalPort: 3000,
+    displayName: "Next.js",
+    icon: NextJs,
+    invert: true,
   },
   laravel: {
     id: "laravel",
     type: "backend",
     internalPort: 80,
+    displayName: "Laravel",
+    icon: Laravel,
+    invert: false,
   },
   postgres: {
     id: "postgres",
     type: "database",
     internalPort: 5432,
+    displayName: "PostgreSQL",
+    icon: Postgres,
+    invert: false,
   },
 } as const;
 

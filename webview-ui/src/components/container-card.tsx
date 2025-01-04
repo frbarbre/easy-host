@@ -19,6 +19,7 @@ import {
 import { Input } from "./ui/input";
 
 interface ContainerCardProps {
+  container: Container;
   index: number;
   field: FieldValues;
   form: UseFormReturn<FormSchema>;
@@ -106,6 +107,7 @@ function FolderTree({
 }
 
 export function ContainerCard({
+  container,
   index,
   field,
   form,
@@ -196,8 +198,11 @@ export function ContainerCard({
     <Card className="mt-4">
       <CardContent className="pt-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold capitalize">
-            {field.name} Container
+          <h3 className="text-lg flex items-center gap-2 font-semibold">
+            <container.icon
+              className={cn("w-6 h-6", container.invert && "dark:invert")}
+            />
+            {container.displayName}
           </h3>
           <Button
             variant="destructive"

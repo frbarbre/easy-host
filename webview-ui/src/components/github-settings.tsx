@@ -15,6 +15,8 @@ import {
 import { Input } from "./ui/input";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import Github from "./icons/github";
+import { cn } from "@/lib/utils";
 
 interface GitHubSettingsProps {
   form: UseFormReturn<FormSchema>;
@@ -66,7 +68,10 @@ export function GitHubSettings({ form }: GitHubSettingsProps) {
     <Card>
       <CardContent className="pt-6 space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">GitHub Settings</h2>
+          <h2 className="text-2xl font-bold flex items-center gap-2">
+            <Github className={cn("w-6 h-6", "dark:invert")} />
+            GitHub Settings
+          </h2>
           <Button
             variant="outline"
             onClick={fetchGitHubInfo}
