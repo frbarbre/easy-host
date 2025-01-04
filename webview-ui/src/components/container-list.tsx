@@ -17,6 +17,7 @@ import {
 } from "./ui/select";
 import { useFieldArray } from "react-hook-form";
 import { Card, CardContent } from "./ui/card";
+import { FormMessage } from "./ui/form";
 
 interface ContainerListProps {
   form: UseFormReturn<FormSchema>;
@@ -91,7 +92,9 @@ export function ContainerList({ form }: ContainerListProps) {
       <h2 className="text-2xl font-bold">Containers</h2>
 
       {errors.containers && (
-        <p className="text-red-500">{errors.containers.message}</p>
+        <FormMessage className="text-destructive">
+          {errors.containers.message}
+        </FormMessage>
       )}
 
       <div className="grid gap-6">

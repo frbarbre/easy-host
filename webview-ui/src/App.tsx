@@ -1,21 +1,20 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { AdvancedSettings } from "./components/advanced-settings";
 import { ContainerList } from "./components/container-list";
+import { GitHubSettings } from "./components/github-settings";
 import { ProjectSettings } from "./components/project-settings";
+import { ThemeProvider } from "./components/theme-provider";
 import { Button } from "./components/ui/button";
 import { Form } from "./components/ui/form";
+import { usePersistence } from "./hooks/usePersistence";
 import {
+  defaultFormValues,
   FormSchema,
   formSchema,
-  defaultFormValues,
 } from "./schemas/form-schema";
-import { vscode } from "./vscode";
-import { usePersistence } from "./hooks/usePersistence";
 import { Config } from "./types";
-import { GitHubSettings } from "./components/github-settings";
-import { ThemeProvider } from "./components/theme-provider";
+import { vscode } from "./vscode";
 
 const placeholderData: Config = {
   containers: [
@@ -161,7 +160,6 @@ function App() {
               >
                 <GitHubSettings form={form} />
                 <ProjectSettings form={form} />
-                <AdvancedSettings form={form} />
                 <ContainerList form={form} />
                 <Button
                   type="button"

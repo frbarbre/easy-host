@@ -69,6 +69,6 @@ export const defaultFormValues: FormSchema = {
   },
   env_variables: [],
   nginx: {
-    configName: "",
+    configName: "my-app",
   },
 } as const;
