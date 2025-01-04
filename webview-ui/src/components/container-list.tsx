@@ -1,13 +1,15 @@
-import { UseFormReturn } from "react-hook-form";
+import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { FormSchema } from "../schemas/form-schema";
-import { ContainerCard } from "./container-card";
 import {
-  containers,
-  getType,
   Container,
   containerConfig,
+  containers,
   getDefaultEnvVariables,
+  getType,
 } from "../utils";
+import { ContainerCard } from "./container-card";
+import { Card, CardContent } from "./ui/card";
+import { FormMessage } from "./ui/form";
 import {
   Select,
   SelectContent,
@@ -15,9 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { useFieldArray } from "react-hook-form";
-import { Card, CardContent } from "./ui/card";
-import { FormMessage } from "./ui/form";
 
 interface ContainerListProps {
   form: UseFormReturn<FormSchema>;
@@ -65,13 +64,20 @@ export function ContainerList({ form }: ContainerListProps) {
         throw new Error(`Invalid container configuration for ID: ${id}`);
       }
 
+      const defaultProxy =
+        container.type === "frontend"
+          ? "/"
+          : container.type === "backend"
+          ? "/api"
+          : null;
+
       // Create container with default values
       const newContainer = {
         name: container.id,
         port: String(container.internalPort),
         id: container.id,
-        context: null,
-        proxy: container.type === "frontend" ? "/" : null,
+        context: container.type === "database" ? null : ".",
+        proxy: defaultProxy,
         env_variables: getDefaultEnvVariables(container.id),
       };
 
