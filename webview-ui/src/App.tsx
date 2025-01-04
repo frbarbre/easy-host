@@ -15,6 +15,7 @@ import {
 } from "./schemas/form-schema";
 
 import { vscode } from "./vscode";
+import { Toaster } from "./components/ui/sonner";
 
 // const placeholderData: Config = {
 //   containers: [
@@ -174,6 +175,7 @@ function App() {
           </>
         )}
       </main>
+      <Toaster />
     </ThemeProvider>
   );
 }
