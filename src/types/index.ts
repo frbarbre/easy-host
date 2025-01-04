@@ -36,3 +36,9 @@ export type Config = {
     configName: string;
   };
 };
+
+export type FolderStructure = {
+  name: string;
+  path: string;
+  subfolders: FolderStructure[] | null;
+};

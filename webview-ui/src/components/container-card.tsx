@@ -1,19 +1,22 @@
+import { cn } from "@/lib/utils";
+import { Container, getType } from "@/utils";
+import { vscode } from "@/vscode";
+import { ChevronDown, ChevronRight, Folder } from "lucide-react";
+import { useEffect, useState } from "react";
+import { FieldValues, UseFormReturn } from "react-hook-form";
+import { FormSchema } from "../schemas/form-schema";
+import { EnvVariableInputs } from "./env-variable-inputs";
+import { Button } from "./ui/button";
+import { Card, CardContent } from "./ui/card";
 import {
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
-  FormDescription,
   FormMessage,
 } from "./ui/form";
-import { Card, CardContent } from "./ui/card";
 import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { EnvVariableInputs } from "./env-variable-inputs";
-import { FieldValues, UseFormReturn } from "react-hook-form";
-import { FormSchema } from "../schemas/form-schema";
-import { Container, getType } from "@/utils";
-import { useEffect } from "react";
 
 interface ContainerCardProps {
   index: number;
@@ -22,12 +25,122 @@ interface ContainerCardProps {
   onRemove: () => void;
 }
 
+type FolderStructure = {
+  name: string;
+  path: string;
+  subfolders: FolderStructure[] | null;
+};
+
+function FolderTree({
+  structure,
+  depth = 0,
+  onSelect,
+  selectedPath,
+  index,
+}: {
+  structure: FolderStructure;
+  depth?: number;
+  onSelect: (path: string) => void;
+  selectedPath?: string;
+  index: number;
+}) {
+  const isPartOfSelectedPath = selectedPath?.startsWith(structure.path + "/");
+  const [isOpen, setIsOpen] = useState(isPartOfSelectedPath || false);
+
+  // Update isOpen when selectedPath changes
+  useEffect(() => {
+    if (isPartOfSelectedPath) {
+      setIsOpen(true);
+    }
+  }, [selectedPath, isPartOfSelectedPath]);
+
+  console.log(index, depth, structure.path);
+
+  return (
+    <div className={cn(depth + index !== 0 && "mt-1", depth !== 0 && "ml-3")}>
+      <div
+        className={cn(
+          "flex items-center gap-2 p-1 rounded-sm hover:bg-secondary cursor-pointer",
+          selectedPath === structure.path && "bg-secondary",
+          !structure.subfolders && "pl-7"
+        )}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect(structure.path);
+        }}
+      >
+        {structure.subfolders && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen(!isOpen);
+            }}
+          >
+            {isOpen ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronRight className="h-4 w-4" />
+            )}
+          </div>
+        )}
+        <Folder className="h-4 w-4" />
+        <span className="text-sm">{structure.name}</span>
+      </div>
+
+      {isOpen && structure.subfolders && (
+        <div className="ml-2">
+          {structure.subfolders.map((folder, i) => (
+            <FolderTree
+              key={i}
+              index={i}
+              structure={folder}
+              depth={depth + 1}
+              onSelect={onSelect}
+              selectedPath={selectedPath}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ContainerCard({
   index,
   field,
   form,
   onRemove,
 }: ContainerCardProps) {
+  const [folderStructure, setFolderStructure] = useState<FolderStructure[]>([]);
+  const [isTreeOpen, setIsTreeOpen] = useState(false);
+
+  useEffect(() => {
+    window.addEventListener("message", (event) => {
+      const message = event.data;
+      switch (message.command) {
+        case "set-workspaces":
+          setFolderStructure(message.workspaceFolders?.[0]?.subfolders);
+          break;
+      }
+    });
+
+    vscode.postMessage({ command: "webview-ready" });
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        isTreeOpen &&
+        !(event.target as HTMLElement).closest(".folder-tree")
+      ) {
+        setIsTreeOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isTreeOpen]);
+
   const type = getType(field.id as Container["id"]);
 
   const currentValues = form.watch();
@@ -71,6 +184,12 @@ export function ContainerCard({
     type,
     currentValues.containers,
   ]);
+
+  useEffect(() => {
+    if (currentValues.containers[index].context === "") {
+      form.setValue(`containers.${index}.context`, ".");
+    }
+  }, [currentValues.containers[index].context]);
 
   return (
     <Card className="mt-4">
@@ -123,7 +242,6 @@ export function ContainerCard({
 
           {type !== "database" && (
             <>
-              {/* Context Field */}
               <FormField
                 control={form.control}
                 name={`containers.${index}.context`}
@@ -131,11 +249,46 @@ export function ContainerCard({
                   <FormItem>
                     <FormLabel>Context</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        value={field.value || ""}
-                        placeholder="./packages/frontend"
-                      />
+                      <div className="relative">
+                        <Input
+                          {...field}
+                          value={field.value || ""}
+                          placeholder="./packages/frontend"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsTreeOpen(true);
+                          }}
+                        />
+                        {isTreeOpen && folderStructure.length > 0 && (
+                          <Card className="absolute top-full left-0 w-full mt-1 z-50 max-h-[300px] overflow-y-auto folder-tree">
+                            <CardContent className="p-2">
+                              <Button
+                                variant="ghost"
+                                className="w-full justify-start mb-1 gap-2 h-7 p-1 pl-7"
+                                onClick={() => {
+                                  field.onChange(".");
+                                  setIsTreeOpen(false);
+                                }}
+                              >
+                                <Folder className="h-4 w-4" />
+                                <span className="text-sm">.</span>
+                              </Button>
+                              {folderStructure.map((folder, i) => (
+                                <FolderTree
+                                  key={i}
+                                  index={i}
+                                  structure={folder}
+                                  onSelect={(path) => {
+                                    field.onChange(path);
+                                    setIsTreeOpen(false);
+                                  }}
+                                  selectedPath={field.value || undefined}
+                                />
+                              ))}
+                            </CardContent>
+                          </Card>
+                        )}
+                      </div>
                     </FormControl>
                     <FormDescription>
                       The path to the container's context (optional)
