@@ -1,5 +1,6 @@
 import { UseFormReturn } from "react-hook-form";
 import { FormSchema } from "../schemas/form-schema";
+import { AdvancedSettings } from "./advanced-settings";
 import { Card, CardContent } from "./ui/card";
 import {
   FormControl,
@@ -10,7 +11,6 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { Switch } from "./ui/switch";
 
 interface ProjectSettingsProps {
   form: UseFormReturn<FormSchema>;
@@ -84,33 +84,7 @@ export function ProjectSettings({ form }: ProjectSettingsProps) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="include_sensitive_env_variables"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 space-y-0">
-              <label
-                htmlFor="include_sensitive_env_variables"
-                className="space-y-0.5 flex-1"
-              >
-                <FormLabel className="text-base">
-                  Include Sensitive Environment Variables
-                </FormLabel>
-                <FormDescription>
-                  Whether to include sensitive environment variables in the
-                  deployment
-                </FormDescription>
-              </label>
-              <FormControl>
-                <Switch
-                  id="include_sensitive_env_variables"
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+        <AdvancedSettings form={form} />
       </CardContent>
     </Card>
   );
