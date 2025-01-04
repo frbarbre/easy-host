@@ -125,7 +125,7 @@ export class Panel {
           <link rel="stylesheet" type="text/css" href="${stylesUri}">
           <title>EZ Deploy</title>
         </head>
-        <body>
+        <body style="padding: 32px;">
           <div id="root"></div>
           <script type="module" nonce="${nonce}" src="${scriptUri}"></script>
         </body>

@@ -6,11 +6,16 @@ import { ContainerList } from "./components/container-list";
 import { ProjectSettings } from "./components/project-settings";
 import { Button } from "./components/ui/button";
 import { Form } from "./components/ui/form";
-import { FormSchema, formSchema } from "./schemas/form-schema";
+import {
+  FormSchema,
+  formSchema,
+  defaultFormValues,
+} from "./schemas/form-schema";
 import { vscode } from "./vscode";
 import { usePersistence } from "./hooks/usePersistence";
 import { Config } from "./types";
 import { GitHubSettings } from "./components/github-settings";
+import { ThemeProvider } from "./components/theme-provider";
 
 const placeholderData: Config = {
   containers: [
@@ -114,26 +119,10 @@ const placeholderData: Config = {
 function App() {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      containers: [],
-      network_name: "",
-      domain: "",
-      email: "",
-      api_url_env: "API_URL",
-      include_sensitive_env_variables: false,
-      location: "",
-      github: {
-        isPrivate: true,
-        uri: "",
-      },
-      env_variables: [],
-      nginx: {
-        configName: "",
-      },
-    },
+    defaultValues: defaultFormValues,
   });
 
-  const { isLoading } = usePersistence({ form });
+  const { isLoading, resetForm } = usePersistence({ form });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log("onSubmit", values);
@@ -145,45 +134,50 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen p-10">
-      {isLoading ? (
-        <div className="flex items-center justify-center min-h-screen"></div>
-      ) : (
-        <>
-          <article className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold">EasyHost</h1>
+    <ThemeProvider>
+      <main className="min-h-screen">
+        {isLoading ? (
+          <div className="flex items-center justify-center min-h-screen"></div>
+        ) : (
+          <>
+            <article className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold">EasyHost</h1>
 
-            <Button
-              onClick={() => {
-                localStorage.removeItem("formState");
-                form.reset();
-              }}
-              variant="ghost"
-            >
-              Reset the form
-            </Button>
-          </article>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <GitHubSettings form={form} />
-              <ProjectSettings form={form} />
-              <AdvancedSettings form={form} />
-              <ContainerList form={form} />
               <Button
-                type="button"
                 onClick={() => {
-                  form.trigger();
-                  form.handleSubmit(onSubmit)();
+                  resetForm();
                 }}
+                variant="ghost"
+                className="text-destructive hover:text-destructive"
               >
-                Deploy
+                Reset the form
               </Button>
-            </form>
-          </Form>
-        </>
-      )}
-    </div>
+            </article>
+
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-8"
+              >
+                <GitHubSettings form={form} />
+                <ProjectSettings form={form} />
+                <AdvancedSettings form={form} />
+                <ContainerList form={form} />
+                <Button
+                  type="button"
+                  onClick={() => {
+                    form.trigger();
+                    form.handleSubmit(onSubmit)();
+                  }}
+                >
+                  Deploy
+                </Button>
+              </form>
+            </Form>
+          </>
+        )}
+      </main>
+    </ThemeProvider>
   );
 }
 

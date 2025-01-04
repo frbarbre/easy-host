@@ -29,7 +29,8 @@ export function ContainerList({ form }: ContainerListProps) {
     keyName: "_id",
   });
 
-  console.log(fields);
+  const { errors } = form.formState;
+
   const usedContainers = fields.map((field) => field.name);
 
   // Group containers by type with type safety
@@ -57,8 +58,6 @@ export function ContainerList({ form }: ContainerListProps) {
       }
 
       const container = containerConfig[id as keyof typeof containerConfig];
-
-      console.log(container);
 
       // Validate the container has required properties
       if (!container || !container.id || !container.internalPort) {
@@ -91,6 +90,10 @@ export function ContainerList({ form }: ContainerListProps) {
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Containers</h2>
 
+      {errors.containers && (
+        <p className="text-red-500">{errors.containers.message}</p>
+      )}
+
       <div className="grid gap-6">
         {Object.entries(containersByType).map(([type, typeContainers]) => {
           const availableContainers = typeContainers.filter(
@@ -102,7 +105,7 @@ export function ContainerList({ form }: ContainerListProps) {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <h3 className="text-lg font-semibold capitalize">{type}</h3>
-                  {availableContainers.length > 0 && (
+                  {availableContainers?.length > 0 && (
                     <Select onValueChange={addContainer}>
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder={`Add ${type}`} />

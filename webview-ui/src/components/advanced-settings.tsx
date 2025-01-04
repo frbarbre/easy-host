@@ -21,8 +21,6 @@ export function AdvancedSettings({ form }: AdvancedSettingsProps) {
 
   const placeholderPrefix = currentValues?.github?.uri?.split("/")[2];
 
-  console.log(currentValues.github);
-
   const [isChanged, setIsChanged] = useState<{
     network_name: boolean;
     nginx_config_name: boolean;
@@ -36,14 +34,14 @@ export function AdvancedSettings({ form }: AdvancedSettingsProps) {
 
     if (
       !isChanged.network_name &&
-      currentValues.network_name !== placeholderPrefix + "-network" &&
-      currentValues.containers.length <= 1
+      currentValues?.network_name !== placeholderPrefix + "-network" &&
+      currentValues?.containers?.length <= 1
     ) {
       form.setValue("network_name", placeholderPrefix + "-network");
     }
     if (
       !isChanged.nginx_config_name &&
-      currentValues.nginx.configName !== placeholderPrefix
+      currentValues?.nginx?.configName !== placeholderPrefix
     ) {
       form.setValue("nginx.configName", placeholderPrefix);
     }
@@ -63,7 +61,7 @@ export function AdvancedSettings({ form }: AdvancedSettingsProps) {
               <FormControl>
                 <Input
                   {...field}
-                  disabled={currentValues.containers.length <= 1}
+                  disabled={currentValues?.containers?.length <= 1}
                   placeholder="my-network"
                   onChange={(e) => {
                     setIsChanged((prev) => ({

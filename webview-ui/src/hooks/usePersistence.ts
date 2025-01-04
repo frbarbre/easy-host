@@ -1,4 +1,4 @@
-import { FormSchema } from "@/schemas/form-schema";
+import { FormSchema, defaultFormValues } from "@/schemas/form-schema";
 import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 
@@ -9,6 +9,21 @@ interface PersistenceOptions {
 
 export function usePersistence({ form, debounceMs = 500 }: PersistenceOptions) {
   const [isLoading, setIsLoading] = useState(true);
+
+  const resetForm = () => {
+    // Clear localStorage
+    localStorage.removeItem("formState");
+    localStorage.removeItem("scrollPosition");
+
+    // Reset form to empty/default values
+    form.reset(defaultFormValues);
+
+    // Reset scroll position
+    window.scrollTo({
+      top: 0,
+      behavior: "instant",
+    });
+  };
 
   // Load saved state and scroll position
   useEffect(() => {
@@ -72,5 +87,5 @@ export function usePersistence({ form, debounceMs = 500 }: PersistenceOptions) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  return { isLoading };
+  return { isLoading, resetForm };
 }
