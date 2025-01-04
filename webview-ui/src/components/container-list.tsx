@@ -17,6 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { cn } from "@/lib/utils";
+import Docker from "./icons/docker";
 
 interface ContainerListProps {
   form: UseFormReturn<FormSchema>;
@@ -94,74 +96,92 @@ export function ContainerList({ form }: ContainerListProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Containers</h2>
+    <Card className="space-y-6 border-b">
+      <CardContent className="pt-6">
+        <h2 className="text-2xl font-bold flex items-center gap-2 pb-6">
+          <Docker className="w-6 h-6" />
+          Docker Containers
+        </h2>
 
-      {errors.containers && (
-        <FormMessage className="text-destructive">
-          {errors.containers.message}
-        </FormMessage>
-      )}
+        {errors.containers && (
+          <FormMessage className="text-destructive">
+            {errors.containers.message}
+          </FormMessage>
+        )}
 
-      <div className="grid gap-6">
-        {Object.entries(containersByType).map(([type, typeContainers]) => {
-          const availableContainers = typeContainers.filter(
-            (container) => !usedContainers.includes(container.id)
-          );
+        <div className="grid gap-6">
+          {Object.entries(containersByType).map(([type, typeContainers]) => {
+            const availableContainers = typeContainers.filter(
+              (container) => !usedContainers.includes(container.id)
+            );
 
-          return (
-            <Card key={type} className="border-dashed">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold capitalize">{type}</h3>
-                  {availableContainers?.length > 0 && (
-                    <Select onValueChange={addContainer}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder={`Add ${type}`} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableContainers.map((container) => (
-                          <SelectItem key={container.id} value={container.id}>
-                            {container.id}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </div>
+            return (
+              <Card key={type} className="border-dashed">
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold capitalize">{type}</h3>
+                    {availableContainers?.length > 0 && (
+                      <Select onValueChange={addContainer}>
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder={`Add ${type}`} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableContainers.map((container) => (
+                            <SelectItem key={container.id} value={container.id}>
+                              <span className="flex items-center gap-2">
+                                <container.icon
+                                  className={cn(
+                                    "w-4 h-4",
+                                    container.invert && "dark:invert"
+                                  )}
+                                />
+                                {container.displayName}
+                              </span>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </div>
 
-                <div className="space-y-4">
-                  {fields
-                    .filter((field) => {
-                      // Add type guard
-                      if (!field?.id) return false;
-                      try {
-                        const fieldType = getType(field.id as Container["id"]);
-                        return fieldType === type;
-                      } catch {
-                        return false;
-                      }
-                    })
-                    .map((field) => {
-                      const originalIndex = fields.findIndex(
-                        (f) => f.id === field.id
-                      );
-                      return (
-                        <ContainerCard
-                          key={field.id}
-                          index={originalIndex}
-                          field={field}
-                          form={form}
-                          onRemove={() => remove(originalIndex)}
-                        />
-                      );
-                    })}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
+                  <div className="space-y-4">
+                    {fields
+                      .filter((field) => {
+                        // Add type guard
+                        if (!field?.id) return false;
+                        try {
+                          const fieldType = getType(
+                            field.id as Container["id"]
+                          );
+                          return fieldType === type;
+                        } catch {
+                          return false;
+                        }
+                      })
+                      .map((field) => {
+                        const originalIndex = fields.findIndex(
+                          (f) => f.id === field.id
+                        );
+                        return (
+                          <ContainerCard
+                            container={
+                              containerConfig[field.id as Container["id"]]
+                            }
+                            key={field.id}
+                            index={originalIndex}
+                            field={field}
+                            form={form}
+                            onRemove={() => remove(originalIndex)}
+                          />
+                        );
+                      })}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
