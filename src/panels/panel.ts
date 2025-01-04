@@ -13,6 +13,9 @@ import { getNonce, getUri } from "../utilities";
 import { Config, FolderStructure } from "../types";
 import { fileGenerator } from "../file-generator";
 import ignore from "ignore";
+import * as fs from "fs/promises";
+import * as path from "path";
+import axios from "axios";
 
 async function readGitignore(path: string): Promise<string[]> {
   try {
@@ -72,6 +75,48 @@ async function getFolderStructure(
   return folders;
 }
 
+async function getGitHubUri(workspacePath: string): Promise<string | null> {
+  try {
+    const gitConfigPath = path.join(workspacePath, ".git", "config");
+    const configContent = await fs.readFile(gitConfigPath, "utf8");
+
+    // Look for the remote "origin" URL
+    const match = configContent.match(/\[remote "origin"\][\s\S]*?url = (.*)/);
+    if (match) {
+      let url = match[1].trim();
+      // Convert SSH format to HTTPS if needed
+      if (url.startsWith("git@")) {
+        url = "https://github.com/" + url.split(":")[1];
+      }
+      // Remove .git suffix if present
+      url = url.replace(/\.git$/, "");
+      return url;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function getGitHubRepoInfo(repoUrl: string): Promise<boolean | null> {
+  try {
+    // Extract owner and repo from URL
+    const [owner, repo] = repoUrl
+      .replace("https://github.com/", "")
+      .replace("github.com/", "")
+      .split("/");
+
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}`;
+
+    const { data } = await axios.get(apiUrl);
+
+    return data.private;
+  } catch (error: any) {
+    console.error("GitHub API Error:", error.response?.data || error.message);
+    return true;
+  }
+}
+
 export class Panel {
   public static currentPanel: Panel | undefined;
   private static readonly viewType = "ez-deploy";
@@ -99,7 +144,7 @@ export class Panel {
         const { command, body } = message;
 
         if (command === "webview-ready") {
-          // Get folder structure for each workspace
+          // Send workspace folders structure
           const workspaceStructures = await Promise.all(
             workspaceFolders.map(async (folder) => ({
               name: folder.name,
@@ -108,10 +153,36 @@ export class Panel {
             }))
           );
 
-          // Send workspace folders and their structures to webview
           this._panel.webview.postMessage({
             command: "set-workspaces",
             workspaceFolders: workspaceStructures,
+          });
+
+          // Send GitHub URIs separately
+          const githubUris = await Promise.all(
+            workspaceFolders.map(async (folder) => ({
+              path: folder.path,
+              uri: await getGitHubUri(folder.path),
+            }))
+          );
+
+          this._panel.webview.postMessage({
+            command: "set-github-uris",
+            githubUris,
+          });
+
+          // Get repository privacy information
+          const repoInfo = await Promise.all(
+            githubUris.map(async ({ path, uri }) => ({
+              path,
+              uri,
+              private: uri ? await getGitHubRepoInfo(uri) : null,
+            }))
+          );
+
+          this._panel.webview.postMessage({
+            command: "set-github-info",
+            repoInfo,
           });
         }
 

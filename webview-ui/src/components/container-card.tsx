@@ -117,6 +117,7 @@ export function ContainerCard({
   useEffect(() => {
     window.addEventListener("message", (event) => {
       const message = event.data;
+      console.log(message);
       switch (message.command) {
         case "set-workspaces":
           setFolderStructure(message.workspaceFolders?.[0]?.subfolders);
@@ -264,7 +265,11 @@ export function ContainerCard({
                             <CardContent className="p-2">
                               <Button
                                 variant="ghost"
-                                className="w-full justify-start mb-1 gap-2 h-7 p-1 pl-7"
+                                className={cn(
+                                  "w-full justify-start mb-1 gap-2 h-7 p-1 pl-7",
+                                  currentValues.containers[index].context ===
+                                    "." && "bg-secondary"
+                                )}
                                 onClick={() => {
                                   field.onChange(".");
                                   setIsTreeOpen(false);
