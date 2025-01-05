@@ -17,6 +17,8 @@ interface ProjectSettingsProps {
 }
 
 export function ProjectSettings({ form }: ProjectSettingsProps) {
+  const currentValues = form.watch();
+
   return (
     <Card>
       <CardContent className="pt-6 space-y-6">
@@ -32,9 +34,40 @@ export function ProjectSettings({ form }: ProjectSettingsProps) {
                 <Input placeholder="example.com" {...field} />
               </FormControl>
               <FormMessage />
+              <FormDescription>
+                The domain you want to deploy your project to. Do not include
+                the protocol (http:// or https://).
+              </FormDescription>
             </FormItem>
           )}
         />
+
+        {currentValues.domain && (
+          <div className="rounded-lg border p-4 bg-muted">
+            <p className="font-medium mb-2">
+              Please add the following DNS records to your provider:
+            </p>
+            <div className="grid grid-cols-3 gap-4 text-sm">
+              <div className="font-medium">Type</div>
+              <div className="font-medium">Host</div>
+              <div className="font-medium">Value</div>
+              <div>A</div>
+              <div>
+                {currentValues.domain.split(".").length > 2
+                  ? currentValues.domain.split(".")[0]
+                  : currentValues.domain}
+              </div>
+              <div>Server IP address (eg. 12.43.5.678)</div>
+              {currentValues.domain.split(".").length <= 2 && (
+                <>
+                  <div>CNAME</div>
+                  <div>www</div>
+                  <div>{currentValues.domain}</div>
+                </>
+              )}
+            </div>
+          </div>
+        )}
 
         <FormField
           control={form.control}
@@ -46,6 +79,9 @@ export function ProjectSettings({ form }: ProjectSettingsProps) {
                 <Input placeholder="you@example.com" {...field} />
               </FormControl>
               <FormMessage />
+              <FormDescription>
+                Your email address, used for generating SSL certificates.
+              </FormDescription>
             </FormItem>
           )}
         />
@@ -60,7 +96,7 @@ export function ProjectSettings({ form }: ProjectSettingsProps) {
                 <Input placeholder="/path/to/project" {...field} />
               </FormControl>
               <FormDescription>
-                The location where your project will be deployed
+                The location you wish to save your project files on your server.
               </FormDescription>
               <FormMessage />
             </FormItem>
