@@ -1,11 +1,22 @@
-.vscode/**
-.vscode-test/**
+# Exclude development-related configurations
+.vscode/
+
+# Exclude TypeScript source files
 src/**
-.gitignore
-.yarnrc
+
+# Exclude build artifacts except for the bundled extension
+out/**
+!dist/extension.js
+
+# Include only the webview build directory
+webview-ui/**
+!webview-ui/build/**
+
+# Exclude other unnecessary files
+CHANGELOG.md
+tsconfig.json
 vsc-extension-quickstart.md
-**/tsconfig.json
-**/.eslintrc.json
-**/*.map
-**/*.ts
-**/.vscode-test.*
+*.map
+*.lock
+node_modules/
+.gitignore

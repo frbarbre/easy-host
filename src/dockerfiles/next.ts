@@ -1,6 +1,5 @@
 export function getNextDockerFile(port: number = 3000) {
-  return `# Stage 0: Use Node.js as the base image
-FROM node:18-alpine AS base
+  return `FROM node:18-alpine AS base
 
 # Stage 1: Install dependencies
 FROM base AS deps
