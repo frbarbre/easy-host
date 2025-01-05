@@ -1,7 +1,7 @@
 {
-  "name": "ez-deploy",
-  "displayName": "Ez Deploy",
-  "description": "",
+  "name": "easy-host",
+  "displayName": "EasyHost",
+  "description": "Deploy your project to your own server in seconds.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.88.0"
