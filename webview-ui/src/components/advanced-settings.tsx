@@ -162,7 +162,8 @@ export function AdvancedSettings({ form }: AdvancedSettingsProps) {
                   </FormLabel>
                   <FormDescription>
                     Whether to include sensitive environment variables in the
-                    deployment
+                    deploy scripts. (Note: the scripts will be added to your
+                    .gitignore if you enable this)
                   </FormDescription>
                 </label>
                 <FormControl>

@@ -91,7 +91,7 @@ export function ProjectSettings({ form }: ProjectSettingsProps) {
           name="location"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Location</FormLabel>
+              <FormLabel>Server Location</FormLabel>
               <FormControl>
                 <Input placeholder="/path/to/project" {...field} />
               </FormControl>
@@ -113,7 +113,10 @@ export function ProjectSettings({ form }: ProjectSettingsProps) {
                 <Input placeholder="API_URL" {...field} />
               </FormControl>
               <FormDescription>
-                The environment variable name used for API URL in your frontend
+                The name of the environment variable in your frontend that
+                stores the API URL (e.g. if you use
+                API_URL=http://localhost:8000 in your .env file, enter "API_URL"
+                here).
               </FormDescription>
               <FormMessage />
             </FormItem>

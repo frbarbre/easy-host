@@ -242,6 +242,9 @@ export function ContainerCard({
                   <Input {...field} placeholder="3000" />
                 </FormControl>
                 <FormMessage />
+                <FormDescription>
+                  The external port your application will run on.
+                </FormDescription>
               </FormItem>
             )}
           />
@@ -253,7 +256,7 @@ export function ContainerCard({
                 name={`containers.${index}.context`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Context</FormLabel>
+                    <FormLabel>Project Path</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
@@ -301,7 +304,8 @@ export function ContainerCard({
                       </div>
                     </FormControl>
                     <FormDescription>
-                      The path to the container's context (optional)
+                      The path to the application's root directory, "." means
+                      the current directory.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -325,7 +329,8 @@ export function ContainerCard({
                           />
                         </FormControl>
                         <FormDescription>
-                          The proxy path for the container (optional)
+                          The path you want to proxy to your application (e.g.
+                          "/api").
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
