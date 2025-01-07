@@ -72,19 +72,13 @@ export function GitHubSettings({ form }: GitHubSettingsProps) {
             <Github className={cn("w-6 h-6", "dark:invert")} />
             GitHub Settings
           </h2>
-          <Button
-            variant="outline"
-            onClick={fetchGitHubInfo}
-            disabled={isLoading}
-          >
+          <Button onClick={fetchGitHubInfo} disabled={isLoading}>
             {isLoading ? (
-              <>
-                Fetching
-                <Loader2 className="w-4 h-4 ml-2 animate-spin" />
-              </>
+              <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
-              "Fetch Repository Info"
+              <Github className={cn("w-4 h-4", "dark:invert-0 invert")} />
             )}
+            Fetch Repository Info
           </Button>
         </div>
         <FormField
