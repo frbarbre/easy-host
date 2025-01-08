@@ -79,6 +79,12 @@ export const containerConfig = {
     internalPort: 80,
     type: "backend",
   },
+  sveltekit: {
+    id: "sveltekit",
+    image: null,
+    internalPort: 3000,
+    type: "frontend",
+  },
 } as const;
 
 export const containers = Object.values(containerConfig);

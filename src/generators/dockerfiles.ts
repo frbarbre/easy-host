@@ -3,6 +3,7 @@ import * as path from "path";
 import { Config } from "../types";
 import { getDockerfile } from "../dockerfiles";
 import { updateNextConfig } from "../handlers/next-config";
+import { updateSveltekitConfig } from "../handlers/svelte-config";
 
 export function generateDockerfile(
   container: Config["containers"][number],
@@ -25,6 +26,9 @@ export function generateDockerfile(
     updateNextConfig(containerPath);
   }
 
+  if (container.id === "sveltekit") {
+    updateSveltekitConfig(containerPath);
+  }
   // Ensure directory exists before writing
   ensureDirectoryExists(containerPath);
   fs.writeFileSync(dockerfilePath, dockerfileContent);
