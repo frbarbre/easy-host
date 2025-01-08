@@ -112,7 +112,8 @@ export function EnvVariableInputs({
                             defaultEnvVariables.some(
                               (envVar) => envVar.key === field.value
                             ) ||
-                            (field.value === currentValues.api_url_env &&
+                            ((field.value === currentValues.api_url_env ||
+                              field.value === "ORIGIN") &&
                               type === "frontend")
                           }
                           {...field}
@@ -130,7 +131,8 @@ export function EnvVariableInputs({
                             <Input
                               {...valueField}
                               disabled={
-                                field.value === currentValues.api_url_env &&
+                                (field.value === currentValues.api_url_env ||
+                                  field.value === "ORIGIN") &&
                                 type === "frontend"
                               }
                               value={valueField.value || ""}
@@ -149,7 +151,8 @@ export function EnvVariableInputs({
                         defaultEnvVariables.some(
                           (envVar) => envVar.key === field.value
                         ) ||
-                        (field.value === currentValues.api_url_env &&
+                        ((field.value === currentValues.api_url_env ||
+                          field.value === "ORIGIN") &&
                           type === "frontend")
                       }
                     >

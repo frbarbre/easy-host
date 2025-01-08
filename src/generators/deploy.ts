@@ -92,16 +92,29 @@ sudo systemctl start docker`;
 
 function generateEnvFileSetup(config: Config): string {
   let setup = "";
+  let rootEnvVars = [...config.env_variables];
 
-  // First, set up root-level .env file
-  if (config.env_variables.length > 0) {
+  // Add SvelteKit env variables to root
+  const svelteKitContainer = config.containers.find(
+    (c) => c.id === "sveltekit"
+  );
+  if (svelteKitContainer) {
+    rootEnvVars = [...rootEnvVars, ...svelteKitContainer.env_variables];
+  }
+
+  // Set up root-level .env file
+  if (rootEnvVars.length > 0) {
     setup += `\n# Set up root environment variables\n`;
     setup += `cat > "$APP_DIR/.env" << EOL\n`;
-    config.env_variables.forEach(({ key, value }) => {
+    rootEnvVars.forEach(({ key, value }) => {
       if (config.include_sensitive_env_variables) {
         setup += `${key}=${value}\n`;
       } else {
-        setup += `${key}=very_secret_value\n`;
+        let v = "very_secret_value";
+        if (key === config.api_url_env || key === "ORIGIN") {
+          v = value;
+        }
+        setup += `${key}=${v}\n`;
       }
     });
     setup += "EOL\n";
@@ -109,6 +122,10 @@ function generateEnvFileSetup(config: Config): string {
 
   // Then set up container-specific .env files
   config.containers.forEach((container) => {
+    if (container.id === "sveltekit") {
+      return; // Skip SvelteKit as its vars are now in root
+    }
+
     if (container.env_variables.length > 0) {
       const envPath = container.context
         ? `"$APP_DIR/${container.context}/.env"`
@@ -120,7 +137,11 @@ function generateEnvFileSetup(config: Config): string {
         if (config.include_sensitive_env_variables) {
           setup += `${key}=${value}\n`;
         } else {
-          setup += `${key}=very_secret_value\n`;
+          let v = "very_secret_value";
+          if (key === config.api_url_env || key === "ORIGIN") {
+            v = value;
+          }
+          setup += `${key}=${v}\n`;
         }
       });
       setup += "EOL\n";
