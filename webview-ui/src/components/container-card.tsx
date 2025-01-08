@@ -157,24 +157,37 @@ export function ContainerCard({
 
   const api_url_value = `http://${backend_container_name}`;
 
+  const origin_value = `https://${currentValues.domain}`;
+
   useEffect(() => {
     if (type === "frontend") {
       const currentEnvVars = currentValues.containers[index].env_variables;
+      const isSvelteKit = container.id === "sveltekit";
 
-      // Remove any old API URL variables
+      // Remove any old API URL variables and ORIGIN variable for SvelteKit
       const filteredVars = currentEnvVars.filter(
         (v) =>
           !Object.values(currentValues.containers).some((c) =>
             c.env_variables.some(
-              (ev) => ev.key === v.key && ev.value.startsWith("http://")
+              (ev) =>
+                ev.key === v.key &&
+                (ev.value.startsWith("http://") || ev.key === "ORIGIN")
             )
           )
       );
 
-      // Only add API URL if backend exists
-      const newVars = backend_container_name
-        ? [{ key: api_url_name, value: api_url_value }, ...filteredVars]
-        : filteredVars;
+      // Prepare new variables
+      let newVars = filteredVars;
+
+      // Add API URL if backend exists
+      if (backend_container_name) {
+        newVars = [{ key: api_url_name, value: api_url_value }, ...newVars];
+      }
+
+      // Add ORIGIN for SvelteKit
+      if (isSvelteKit) {
+        newVars = [{ key: "ORIGIN", value: origin_value }, ...newVars];
+      }
 
       form.setValue(`containers.${index}.env_variables`, newVars);
     }
@@ -182,10 +195,13 @@ export function ContainerCard({
     backend_container_name,
     api_url_name,
     api_url_value,
+    origin_value,
     form,
     index,
     type,
+    container.id,
     currentValues.containers,
+    currentValues.domain,
   ]);
 
   useEffect(() => {

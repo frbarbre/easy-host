@@ -37,7 +37,7 @@ export function generateDockerCompose(config: Config, projectRoot: string) {
               "http://" + types.find((type) => type.type === "backend")?.name
             }`;
           }
-          if (type === "database") {
+          if (type === "database" || container.id === "sveltekit") {
             return `      ${env.key}: ${"${" + env.key + "}"}`;
           }
         })

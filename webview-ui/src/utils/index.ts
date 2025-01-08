@@ -1,6 +1,7 @@
 import { Laravel } from "@/components/icons/laravel";
 import NextJs from "@/components/icons/next-js";
 import Postgres from "@/components/icons/postgres";
+import Svelte from "@/components/icons/svelte";
 
 export const containerConfig = {
   next: {
@@ -25,6 +26,14 @@ export const containerConfig = {
     internalPort: 5432,
     displayName: "PostgreSQL",
     icon: Postgres,
+    invert: false,
+  },
+  sveltekit: {
+    id: "sveltekit",
+    type: "frontend",
+    internalPort: 3000,
+    displayName: "SvelteKit",
+    icon: Svelte,
     invert: false,
   },
 } as const;
