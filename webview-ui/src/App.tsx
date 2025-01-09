@@ -16,105 +16,8 @@ import {
 
 import { vscode } from "./vscode";
 import { Toaster } from "./components/ui/sonner";
-
-// const placeholderData: Config = {
-//   containers: [
-//     {
-//       port: 3004,
-//       name: "ez-next",
-//       id: "next",
-//       context: "./frontend",
-//       proxy: "/",
-//       env_variables: [
-//         {
-//           key: "API_URL",
-//           value: "http://laravel",
-//         },
-//       ],
-//     },
-//     {
-//       port: 8080,
-//       name: "ez-laravel",
-//       id: "laravel",
-//       context: "./backend",
-//       proxy: "/api",
-//       env_variables: [
-//         {
-//           key: "DB_CONNECTION",
-//           value: "pgsql",
-//         },
-//         {
-//           key: "DB_HOST",
-//           value: "ez-postgres",
-//         },
-//         {
-//           key: "DB_PORT",
-//           value: "5432",
-//         },
-//         {
-//           key: "DB_DATABASE",
-//           value: "db",
-//         },
-//         {
-//           key: "DB_USERNAME",
-//           value: "postgres",
-//         },
-//         {
-//           key: "DB_PASSWORD",
-//           value: "password",
-//         },
-//       ],
-//     },
-//     {
-//       port: 9891,
-//       name: "ez-postgres",
-//       id: "postgres",
-//       context: null,
-//       proxy: null,
-//       env_variables: [
-//         {
-//           key: "POSTGRES_USER",
-//           value: "postgres",
-//         },
-//         {
-//           key: "POSTGRES_PASSWORD",
-//           value: "password",
-//         },
-//         {
-//           key: "POSTGRES_DB",
-//           value: "db",
-//         },
-//       ],
-//     },
-//   ],
-//   github: {
-//     isPrivate: true,
-//     uri: "github.com/frbarbre/ez-deploy-test-project",
-//   },
-//   env_variables: [
-//     {
-//       key: "POSTGRES_USER",
-//       value: "postgres",
-//     },
-//     {
-//       key: "POSTGRES_PASSWORD",
-//       value: "password",
-//     },
-//     {
-//       key: "POSTGRES_DB",
-//       value: "db",
-//     },
-//   ],
-//   network_name: "cool",
-//   domain: "ezdeploy.frederikbarbre.dk",
-//   email: "fr.barbre@gmail.com",
-//   api_url_env: "API_URL",
-//   include_sensitive_env_variables: true,
-//   location: "/ezdeploy/myapp",
-//   nginx: {
-//     configName: "ezdeploy",
-//   },
-// };
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 function App() {
   const form = useForm<FormSchema>({
@@ -124,8 +27,27 @@ function App() {
 
   const { isLoading, resetForm } = usePersistence({ form });
 
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      const message = event.data;
+      if (message.command === "generation-result") {
+        if (!message.success) {
+          if (message.error === "UNCOMMITTED_CHANGES") {
+            toast.error(message.message);
+          } else {
+            toast.error("An error occurred while generating files.");
+          }
+        } else {
+          toast.success(message.message);
+        }
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("onSubmit", values);
     vscode.postMessage({
       command: "submit",
       body: values,

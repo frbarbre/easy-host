@@ -1,5 +1,9 @@
 import { Uri, Webview } from "vscode";
 import { Container, Type } from "./types";
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execAsync = promisify(exec);
 
 /**
  * A helper function which will get the webview URI of a given file or resource.
@@ -99,4 +103,18 @@ export function getInternalPort(id: Container["id"]) {
 
 export function getType(id: Container["id"]) {
   return containerConfig[id as keyof typeof containerConfig].type;
+}
+
+export async function hasUncommittedChanges(
+  directory: string
+): Promise<boolean> {
+  try {
+    const { stdout } = await execAsync("git status --porcelain", {
+      cwd: directory,
+    });
+    return stdout.length > 0;
+  } catch (error) {
+    // If git command fails, assume it's not a git repository
+    return false;
+  }
 }
