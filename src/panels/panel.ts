@@ -143,6 +143,27 @@ export class Panel {
       async (message: { command: string; body?: Config }) => {
         const { command, body } = message;
 
+        if (command === "submit") {
+          if (!body) {
+            window.showErrorMessage("No configuration provided");
+            return;
+          }
+          const workspaceFolders = workspace.workspaceFolders;
+
+          if (!workspaceFolders) {
+            window.showErrorMessage("No workspace folder found");
+            return;
+          }
+          const workspacePath = workspaceFolders[0].uri.fsPath;
+          const result = await fileGenerator(body, workspacePath);
+
+          // Send the result back to the webview
+          this._panel.webview.postMessage({
+            command: "generation-result",
+            ...result,
+          });
+        }
+
         if (command === "webview-ready") {
           // Send workspace folders structure
           const workspaceStructures = await Promise.all(
@@ -184,22 +205,6 @@ export class Panel {
             command: "set-github-info",
             repoInfo,
           });
-        }
-
-        if (command === "submit") {
-          if (!body) {
-            window.showErrorMessage("No configuration provided");
-            return;
-          }
-          const workspaceFolders = workspace.workspaceFolders;
-
-          console.log(workspaceFolders);
-          if (!workspaceFolders) {
-            window.showErrorMessage("No workspace folder found");
-            return;
-          }
-          const workspacePath = workspaceFolders[0].uri.fsPath;
-          await fileGenerator(body, workspacePath);
         }
       },
       undefined,
