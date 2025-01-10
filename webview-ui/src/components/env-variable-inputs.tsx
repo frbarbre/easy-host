@@ -23,6 +23,7 @@ export function EnvVariableInputs({
 }: EnvVariableInputsProps) {
   const [key, setKey] = useState("");
   const [value, setValue] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   // Get env variables directly from form
   const envVariables = form.watch(`containers.${containerIndex}.env_variables`);
@@ -37,7 +38,7 @@ export function EnvVariableInputs({
         .filter((line) => line.trim() && !line.startsWith("#"))
         .forEach((line) => {
           const [key, ...valueParts] = line.split("=");
-          if (key) {
+          if (key && !envVariables.some((v) => v.key === key.trim())) {
             onAdd(
               key.trim(),
               valueParts
@@ -49,6 +50,7 @@ export function EnvVariableInputs({
         });
       setKey("");
       setValue("");
+      setError(null);
     } else {
       e.currentTarget.value = pastedText;
       if (e.currentTarget.name === "key") setKey(pastedText);
@@ -68,33 +70,63 @@ export function EnvVariableInputs({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-4 mt-2">
-        <Input
-          name="key"
-          placeholder="Key (or paste .env content)"
-          value={key}
-          onChange={(e) => setKey(e.target.value)}
-          onPaste={handlePaste}
-        />
-        <Input
-          name="value"
-          placeholder="Value"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onPaste={handlePaste}
-        />
-        <Button
-          type="button"
-          onClick={() => {
-            if (key && value) {
-              onAdd(key, value);
-              setKey("");
-              setValue("");
-            }
-          }}
-        >
-          Add
-        </Button>
+      <div className="flex flex-col gap-2">
+        <div className="flex gap-4">
+          <Input
+            name="key"
+            placeholder="Key (or paste .env content)"
+            value={key}
+            onChange={(e) => {
+              setKey(e.target.value);
+              setError(null);
+            }}
+            onPaste={handlePaste}
+          />
+          <Input
+            name="value"
+            placeholder="Value"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            onPaste={handlePaste}
+          />
+          <Button
+            type="button"
+            onClick={() => {
+              if (key && value) {
+                if (envVariables.some((v) => v.key === key)) {
+                  setError("A variable with this key already exists");
+                  return;
+                }
+                if (key === currentValues.api_url_env && type === "frontend") {
+                  setError(
+                    `${key} is reserved for the api url environment variable`
+                  );
+                  return;
+                }
+
+                if (
+                  key === "ORIGIN" &&
+                  currentValues.containers[containerIndex].id === "sveltekit"
+                ) {
+                  setError(
+                    `${key} is reserved for the origin environment variable`
+                  );
+                  return;
+                }
+
+                onAdd(key, value);
+                setKey("");
+                setValue("");
+                setError(null);
+              }
+            }}
+          >
+            Add
+          </Button>
+        </div>
+        {error && (
+          <FormMessage className="text-destructive">{error}</FormMessage>
+        )}
       </div>
       {envVariables?.length > 0 && (
         <div className="flex flex-col gap-4 mt-4 border rounded-md p-4">

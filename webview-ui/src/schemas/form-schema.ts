@@ -15,12 +15,23 @@ export const formSchema = z.object({
         id: z.enum(containers.map((c) => c.id) as [string, ...string[]]),
         context: z.string().nullable(),
         proxy: z.string().nullable(),
-        env_variables: z.array(
-          z.object({
-            key: z.string().min(1, { message: "Key is required" }),
-            value: z.string().min(1, { message: "Value is required" }),
-          })
-        ),
+        env_variables: z
+          .array(
+            z.object({
+              key: z.string().min(1, { message: "Key is required" }),
+              value: z.string().min(1, { message: "Value is required" }),
+            })
+          )
+          .refine(
+            (envVars) => {
+              const keys = envVars.map((v) => v.key);
+              return new Set(keys).size === keys.length;
+            },
+            {
+              message: "Environment variable keys must be unique",
+              path: ["key"],
+            }
+          ),
       })
     )
     .min(1, { message: "At least one container is required" }),

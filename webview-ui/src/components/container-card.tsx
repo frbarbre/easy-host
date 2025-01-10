@@ -360,7 +360,9 @@ export function ContainerCard({
 
         {/* Container Environment Variables */}
         <div className="mt-4">
-          <FormLabel>Container Environment Variables</FormLabel>
+          <FormLabel className="block space-y-0 mb-2">
+            Container Environment Variables
+          </FormLabel>
           <EnvVariableInputs
             form={form}
             containerIndex={index}
