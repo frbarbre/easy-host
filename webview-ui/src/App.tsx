@@ -17,7 +17,17 @@ import {
 import { vscode } from "./vscode";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "./components/ui/dialog";
+import { CurlSteps } from "./components/curl-steps";
+import { ManualSteps } from "./components/manual-steps";
+import { List, Settings } from "lucide-react";
 
 function App() {
   const form = useForm<FormSchema>({
@@ -26,6 +36,13 @@ function App() {
   });
 
   const { isLoading, resetForm } = usePersistence({ form });
+
+  const [open, setOpen] = useState(false);
+  const [isManual, setIsManual] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedValues, setSubmittedValues] = useState<FormSchema | null>(
+    null
+  );
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -39,6 +56,8 @@ function App() {
           }
         } else {
           toast.success(message.message);
+          setIsSubmitted(true);
+          setOpen(true);
         }
       }
     };
@@ -48,6 +67,8 @@ function App() {
   }, []);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsManual(values.include_sensitive_env_variables);
+    setSubmittedValues(values);
     vscode.postMessage({
       command: "submit",
       body: values,
@@ -83,17 +104,46 @@ function App() {
                 <GitHubSettings form={form} />
                 <ProjectSettings form={form} />
                 <ContainerList form={form} />
-                <Button
-                  type="button"
-                  onClick={() => {
-                    form.trigger();
-                    form.handleSubmit(onSubmit)();
-                  }}
-                >
-                  Deploy
-                </Button>
+                <div className="flex items-center gap-4">
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      form.trigger();
+                      form.handleSubmit(onSubmit)();
+                    }}
+                  >
+                    <Settings className="w-4 h-4" /> Generate files
+                  </Button>
+
+                  {isSubmitted && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setOpen(true)}
+                    >
+                      <List className="w-4 h-4" /> Show deploy steps
+                    </Button>
+                  )}
+                </div>
               </form>
             </Form>
+
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogContent className="max-h-[90svh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Next steps</DialogTitle>
+                  <DialogDescription>
+                    Follow the instructions to deploy your project.
+                  </DialogDescription>
+                </DialogHeader>
+
+                {isManual ? (
+                  <ManualSteps values={submittedValues} />
+                ) : (
+                  <CurlSteps />
+                )}
+              </DialogContent>
+            </Dialog>
           </>
         )}
       </main>
