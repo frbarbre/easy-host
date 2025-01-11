@@ -4,9 +4,7 @@ import { Config } from "../types";
 
 export function generateDeployScript(config: Config, projectRoot: string) {
   const deployScriptContent = `#!/bin/bash
-
-# GitHub Token for accessing the repository
-GITHUB_TOKEN="your_token_here"
+${config.github.isPrivate ? 'GITHUB_TOKEN="your_token_here"' : ""}
 
 # Script Variables
 REPO_URL="${config.github.isPrivate ? "https://$GITHUB_TOKEN@" : "https://"}${
@@ -61,7 +59,7 @@ echo "Deployment complete. Your application is available at https://$DOMAIN_NAME
 }
 
 function generateEnvironmentVariables(config: Config): string {
-  let envVars = "# Environment Variables\n";
+  let envVars = "";
 
   // Global env variables
   config.env_variables.forEach(({ key, value }) => {
