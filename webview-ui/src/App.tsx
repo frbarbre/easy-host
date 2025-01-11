@@ -140,7 +140,7 @@ function App() {
                 {isManual ? (
                   <ManualSteps values={submittedValues} />
                 ) : (
-                  <CurlSteps />
+                  <CurlSteps values={submittedValues} />
                 )}
               </DialogContent>
             </Dialog>
