@@ -32,19 +32,19 @@ touch deploy.sh`}
         step="3"
         title="Use your preferred editor to edit the deploy.sh file."
       >
-        <Tabs className="mt-4" defaultValue="nvim">
+        <Tabs className="mt-4" defaultValue="vim">
           <TabsList>
-            <TabsTrigger value="nvim">nvim</TabsTrigger>
             <TabsTrigger value="vim">vim</TabsTrigger>
+            <TabsTrigger value="nvim">nvim</TabsTrigger>
             <TabsTrigger value="nano">nano</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="nvim">
-            <CodeBlock>{`nvim deploy.sh`}</CodeBlock>
-          </TabsContent>
-
           <TabsContent value="vim">
             <CodeBlock>{`vim deploy.sh`}</CodeBlock>
+          </TabsContent>
+
+          <TabsContent value="nvim">
+            <CodeBlock>{`nvim deploy.sh`}</CodeBlock>
           </TabsContent>
 
           <TabsContent value="nano">
