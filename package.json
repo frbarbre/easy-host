@@ -2,9 +2,9 @@
   "name": "easy-host",
   "displayName": "EasyHost",
   "description": "Deploy your project to your own server in seconds.",
-  "publisher": "frbarbre",
+  "publisher": "FrederikBarbre",
   "icon": "./images/icon.png",
-  "version": "0.0.13",
+  "version": "0.0.15",
   "engines": {
     "vscode": "^1.88.0"
   },
@@ -12,7 +12,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:ez-deploy.run"
+    "onCommand:easy-host.run"
   ],
   "license": "MIT",
   "repository": {
@@ -23,7 +23,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "ez-deploy.run",
+        "command": "easy-host.run",
         "title": "EasyHost: Open Panel",
         "category": "EasyHost",
         "icon": "$(zap)"
@@ -32,7 +32,7 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "ez-deploy",
+          "id": "easy-host",
           "title": "EasyHost",
           "icon": "$(zap)"
         }

@@ -239,7 +239,7 @@ export function ContainerCard({
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input placeholder={`ez-${field.value}`} {...field} />
+                  <Input placeholder={`easy-${field.value}`} {...field} />
                 </FormControl>
                 <FormDescription>The name of your container</FormDescription>
                 <FormMessage />

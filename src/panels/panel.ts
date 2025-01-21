@@ -119,7 +119,7 @@ async function getGitHubRepoInfo(repoUrl: string): Promise<boolean | null> {
 
 export class Panel {
   public static currentPanel: Panel | undefined;
-  private static readonly viewType = "ez-deploy";
+  private static readonly viewType = "easy-host";
   private readonly _panel: WebviewPanel;
   private _disposables: Disposable[] = [];
 
@@ -227,7 +227,7 @@ export class Panel {
     } else {
       const panel = window.createWebviewPanel(
         Panel.viewType,
-        "EZ Deploy",
+        "EasyHost",
         ViewColumn.One,
         {
           enableScripts: true,
@@ -286,7 +286,7 @@ export class Panel {
             img-src ${webview.cspSource} https:;
           ">
           <link rel="stylesheet" type="text/css" href="${stylesUri}">
-          <title>EZ Deploy</title>
+          <title>EasyHost</title>
         </head>
         <body style="padding: 32px;">
           <div id="root"></div>
