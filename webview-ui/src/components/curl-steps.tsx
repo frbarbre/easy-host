@@ -35,7 +35,16 @@ git push`}
         <CodeBlock>{generateCurlCommand(values)}</CodeBlock>
       </Step>
 
-      <Step step="3" title="Run the deploy.sh file">
+      <Step
+        step="3"
+        title="Open the deploy.sh file and replace the placeholder .env variables, with your own values"
+        description="If your GitHub repository is private, you will need to add your GitHub token to the GITHUB_TOKEN variable in the deploy.sh file."
+      >
+        <CodeBlock>{`cd ~/${values.location.split("/")[1]}
+vim deploy.sh`}</CodeBlock>
+      </Step>
+
+      <Step step="4" title="Run the deploy.sh file">
         <CodeBlock>
           {`cd ~/${values.location.split("/")[1]}
 chmod +x deploy.sh
@@ -44,7 +53,7 @@ chmod +x deploy.sh
       </Step>
 
       <Step
-        step="4"
+        step="5"
         title="Wait for the deployment to finish."
         description="You can also follow the same process to add the update.sh script. Running the script will pull the latest changes from GitHub and deploy them."
       ></Step>

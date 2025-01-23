@@ -4,7 +4,7 @@
   "description": "Deploy your project to your own server in seconds.",
   "publisher": "FrederikBarbre",
   "icon": "./images/icon.png",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "engines": {
     "vscode": "^1.88.0"
   },
