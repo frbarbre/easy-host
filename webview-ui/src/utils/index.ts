@@ -1,6 +1,8 @@
 import { Laravel } from "@/components/icons/laravel";
+import Mongo from "@/components/icons/mongo";
 import NextJs from "@/components/icons/next-js";
 import Postgres from "@/components/icons/postgres";
+import ReactRouter from "@/components/icons/react-router";
 import Svelte from "@/components/icons/svelte";
 
 export const containerConfig = {
@@ -36,6 +38,22 @@ export const containerConfig = {
     icon: Svelte,
     invert: false,
   },
+  mongodb: {
+    id: "mongodb",
+    type: "database",
+    internalPort: 27017,
+    displayName: "MongoDB",
+    icon: Mongo,
+    invert: false,
+  },
+  "react-router": {
+    id: "react-router",
+    type: "frontend",
+    internalPort: 3000,
+    displayName: "React Router",
+    icon: ReactRouter,
+    invert: false,
+  },
 } as const;
 
 export type Container = (typeof containerConfig)[keyof typeof containerConfig];
@@ -68,5 +86,21 @@ export function getDefaultEnvVariables(id: Container["id"]) {
     ];
   }
 
+  if (id === "mongodb") {
+    return [
+      {
+        key: "MONGO_INITDB_ROOT_PASSWORD",
+        value: "",
+      },
+      {
+        key: "MONGO_INITDB_ROOT_USERNAME",
+        value: "",
+      },
+      {
+        key: "MONGO_INITDB_DATABASE",
+        value: "",
+      },
+    ];
+  }
   return [];
 }

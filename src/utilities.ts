@@ -89,6 +89,18 @@ export const containerConfig = {
     internalPort: 3000,
     type: "frontend",
   },
+  "react-router": {
+    id: "react-router",
+    image: null,
+    internalPort: 3000,
+    type: "frontend",
+  },
+  mongodb: {
+    id: "mongodb",
+    image: "mongo:latest",
+    internalPort: 27017,
+    type: "database",
+  },
 } as const;
 
 export const containers = Object.values(containerConfig);
